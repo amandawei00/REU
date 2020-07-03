@@ -5,7 +5,7 @@
 ## These variables need to exist
 ## Note no use of $DESTDIR... we ignore it so that destdir can be used
 ## for temp installs later copied to /
-prefix=/home/mnt/c/Users/lixin/REU/cteq6
+prefix=/usr/local
 exec_prefix=${prefix}
 datarootdir=${prefix}/share
 
@@ -32,7 +32,7 @@ fi
 OUT=""
 
 tmp=$( echo "$*" | egrep -- '--\<prefix\>')
-test -n "$tmp" && OUT="$OUT /home/mnt/c/Users/lixin/REU/cteq6"
+test -n "$tmp" && OUT="$OUT /usr/local"
 
 tmp=$( echo "$*" | egrep -- '--\<incdir\>')
 test -n "$tmp" && OUT="$OUT ${prefix}/include"

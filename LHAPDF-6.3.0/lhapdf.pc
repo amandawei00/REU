@@ -1,4 +1,4 @@
-prefix=/home/mnt/c/Users/lixin/REU/cteq6
+prefix=/usr/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

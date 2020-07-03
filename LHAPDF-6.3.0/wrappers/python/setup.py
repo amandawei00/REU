@@ -14,7 +14,7 @@ libdir = os.path.abspath("../../src/.libs")
 ext = Extension("lhapdf",
                 ["lhapdf.cpp"],
                 include_dirs = [incdir_src, incdir_build],
-                extra_compile_args=["-I/home/mnt/c/Users/lixin/REU/cteq6/include"],
+                extra_compile_args=["-I/usr/local/include"],
                 library_dirs = [libdir],
                 language = "C++",
                 libraries = ["stdc++", "LHAPDF"])
