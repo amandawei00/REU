@@ -1,0 +1,9 @@
+Benchmarks python implementation of DSS14 function against Fig. 1 in 1410.6027
+
+To run the benchmark perform the commands
+
+make
+python DSS14.py
+python plot.py
+
+Python3 is required

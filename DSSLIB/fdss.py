@@ -1,5 +1,6 @@
-import dssfh.so as f
-
+import dssfh as f
+import matplotlib.pyplot as plt
+import numpy as np
 """  
     input: 
         ih -> hadron type (1: pion, 2: kaon, 3: proton, 4: charged hadrons)
@@ -18,10 +19,23 @@ import dssfh.so as f
         b
         gl
 """
-def fDSS(ih,ic,io,x,q2):
+print(f.__doc__)
+def ff(ih,ic,io,x,q2):
     # return array type [u,ub,d,db,s,sb,c,b,gl]
 
-    [u, ub, d, db, s, sb, c, cb, b, bb, gl] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    f.fDSS(ih,ic,io,x,q2,gl,u,ub,d,db,s,sb,c,cb,b,bb)
+#    [u, ub, d, db, s, sb, c, cb, b, bb, gl] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+     gl,u,ub,d,db,s,sb,c,cb,b,bb = f.fdss(ih,ic,io,x,q2)
 
-    return [u, ub, d, db, s, sb, c, cb, b, bb, gl]
+     return u
+
+x_=np.arange(0.5,1,10)
+ih=2
+ic=1
+io=0
+q2=10
+
+print(ff(ih,ic,io,0.9,q2))
+#y_=[ff(ih,ic,io,x,q2)[gl] for x in x_]
+
+#plt.plot(x,y)
+#plt.show()
