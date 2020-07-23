@@ -14,6 +14,7 @@ class DSS:
     dss14fpi.root.root=root.ljust(255)
     
     self.pi={0:{},1:{},-1:{}}
+
   def _get_f(self,z,Q2,storage,func,ic):
     if (z,Q2) not in storage[ic]:
       storage[ic][(z,Q2)]=np.array(func(0,1,ic,self.io,z,Q2))/z
@@ -22,6 +23,7 @@ class DSS:
   def get_f(self,z,Q2,hadron):
     """
     out: U,UB,D,DB,S,SB,C,B,GL
+    p.flavors() returns [-5,-4,-3,-2,-1,1,2,3,4,5,21]. key: d=1,u=2,s=3,c=4,b=5,g=21
     """
     if   hadron=='pi+':return self._get_f(z,Q2,self.pi,dss14fpi.fdssh, 1)
     elif hadron=='pi-':return self._get_f(z,Q2,self.pi,dss14fpi.fdssh,-1)

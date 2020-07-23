@@ -25,7 +25,7 @@ class N():
         y = df.y.to_numpy(dtype='float32')
         n = df.vfr.to_numpy(dtype='float64')
 
-        self.f = interpolate.interp2d(r, y, n, kind=3)
+        self.f = interpolate.interp2d(r, y, n, kind=3) #WRITE METHOD TO FIND FOURIER TRANSFORM OF N, AND F(A)
 
     # fundamental representation
     def bk_f(self,x2,y): 
