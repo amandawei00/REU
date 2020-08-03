@@ -1,39 +1,68 @@
 import numpy as np
 import scipy.interpolate as interpolate
+import scipy.integrate as intg
 import pandas as pd
 import csv
 
 class N():
     def __init__(self):
-        n = 400
+        self.n_ = 400
+        self.xr1 = np.log(3.e-6)
+        self.xr2 = np.log(60.e0) # limit of integration in fourier transform calculation
 
-# read results.csv file from BK solution to pandas dataframe
-        df = pd.read_csv("results.csv", sep="\s+")
-        df = df.drop(df[df.kuta == "kuta"].index)
+        # read results.csv file from BK solution to pandas dataframe
+        self.df = pd.read_csv("results.csv", sep="\s+")
+        self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
 
-# converting dataframe element types
-        df["kuta"] = df["kuta"].astype('int')
-        df["y"] = (df["y"].astype('float32')).round(decimals=1)
-        df["vr"] = df["vr"].astype('float64')
-        df["vfr"] = df["vfr"].astype('float64')
+        # converting dataframe element types
+        self.df["kuta"] = self.df["kuta"].astype('int')
+        self.df["y"] = (self.df["y"].astype(float32)).round(decimals=1)
+        self.df["vr"] = self.df["vr"].astype('float64')
+        self.df["vfr"] = self.df["vfr"].astype('float64')
 
-# isolating relevant data
-        df = df.drop(df[(df.y != y) | (df.kuta != 4)].index)
-
-# assigning vr and vfr values to xlist, ylist, for interpolation
-        r = df.vr.to_numpy(dtype='float64')
-        y = df.y.to_numpy(dtype='float32')
-        n = df.vfr.to_numpy(dtype='float64')
-
-        self.f = interpolate.interp2d(r, y, n, kind=3) #WRITE METHOD TO FIND FOURIER TRANSFORM OF N, AND F(A)
-
-    # fundamental representation
-    def bk_f(self,x2,y): 
-        # y: rapidity
-        return self.f(x2,y)
-
-    def bk_a(self,x2,y):
-        n_a = 2*self.bk_f(x2,y) - np.power(self.bk_f(x2,y),2)
-        return n_a
+        self.r = self.df.vr.to_numpy(dtype = 'float64')
+        self.y = self.df.y.to_numpy(dtype = 'float32')
+        self.n = self.df.vfr.to_nupy(dtype = 'float64')
 
 
+    def bk_f(self,y): # fundamental representation
+        # search file to see if interpolation already exists !!!
+
+        # isolating part of df containing r, N(r,Y) values for rapidity scale of interest
+        sub_ = self.df.loc[(self.df['kuta'] == 4.0) & (self.df['y'] == y)]
+
+        x_ = np.concatenate(sub_[['vr']].to_numpy(), axis = 0)
+        y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis = 0)
+
+        f = interpolate.CubicSpline(x_, y_) # creates interpolation
+
+        # write interpolated object to file !!!
+
+        return f
+
+    def bk_a(self, y):
+        f = self.bk_f(y)
+        return 2*f - np.power(f,2)
+
+    def udg_f(self, x, x0, k):
+        f = self.bk_f(np.log(x0/x))
+        integrand = lambda r: (1 - f(r))*self.bessel(k*r,0)
+        return 2*np.intg(integrand, 0, self.xr2)
+
+    def udg_a(self, x, x0, k):
+        f = self.bk_a(np.log(x0/x))
+        integrand = lambda r: (1-f(r))*self.bessel(k*r,0)
+        return 2*np.intg(integrand, 0, self.xr2)
+
+    def bessel(self, x, alpha):
+        f = lambda t: np.cos(alpha*t - x*np.sin(t))
+        return (1/np.pi)*intg.quad(f,0,np.pi)
+
+    # def bessel_intg(self,k):
+    #    f = lambda u: (u/np.power(k,2)) * self.bessel(u,0)
+    #    return intg.quad(f,0.0,np.inf)
+
+# end of class
+
+if __name__ == "__main__":
+    n = N()

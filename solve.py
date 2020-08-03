@@ -12,7 +12,7 @@ from bk_interpolate import N
 # - FIX FRAGMENTATION FUNCTION
 # - FINISH CODE FOR BK INTERPOLATION
 
-class main():
+class Master():
     def __init__(self,y,s_NN,qsq,K,h):
         self.p = pdf.makePDF("CT10",0)
         self.p = pdf.mkPDF("CT10/0")
@@ -55,12 +55,12 @@ class main():
             return 0.0
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
-        bkf = self.n.bk_f(x2,q/z)
+        bkf = self.n.udg_f(x2,q/z)
         # ff_hq = self.ff.fDSS(4,-1,0,z,q2)[i] # for negatively charged hadron DEFINE i HERE SPECIFIC TO COLOR
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
         pdf_gp = self.p.xfxQ2(21,x1,q2) # 21 for gluon
-        bka = self.n.bk_a(x2,q/z)
+        bka = self.n.udg_a(x2,q/z)
         # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
         ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
@@ -81,4 +81,11 @@ class main():
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-   ih = 'pi0' # hadron type 
+   ih = 'pi0' # hadron type
+   y = 3.3
+   s_NN = np.power(200,2) # GeV
+   qsq2 = 0.4
+   K = 0.4
+
+   s = Master(y, s_NN, qsq2, K, ih)
+   print(s.rhs(2.0))
