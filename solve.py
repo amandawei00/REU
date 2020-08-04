@@ -55,6 +55,7 @@ class Master():
         elif self.f == 3: i = 4
         elif self.f == 21: i = 8
         else:
+            print("lol nah")
             return 0.0
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf

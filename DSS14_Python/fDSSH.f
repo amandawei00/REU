@@ -176,7 +176,7 @@ C          STOP
 
        IF (IS.EQ.0) THEN
        IIREAD=10
-       OPEN(IIREAD,FILE='grids/PI_DSS14.GRID')   
+       OPEN(IIREAD,FILE='./grids/PI_DSS14.GRID')   
        ELSE
        IIREAD=11          
        IF(IS.GT.0) THEN
