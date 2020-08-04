@@ -1,5 +1,7 @@
 import sys
 import numpy as np
+import scipy.integrate as integrate
+
 sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
 
@@ -14,7 +16,7 @@ from bk_interpolate import N
 
 class Master():
     def __init__(self,y,s_NN,qsq,K,h):
-        self.p = pdf.makePDF("CT10",0)
+        self.p = pdf.mkPDF("CT10",0)
         self.p = pdf.mkPDF("CT10/0")
 
         self.n = N()
@@ -37,6 +39,7 @@ class Master():
         return xf
 ####################################################################################################################################
     def integrand(self,z):
+        print("integrand called")
         xf = self.get_xf()
 
         x1 = xf/z
@@ -64,6 +67,8 @@ class Master():
         # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
         ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
+        print("pdf_qp="+str(pdf_qp)+", bkf="+str(bkf)+", ff_hq="+str(ff_hq))
+        print("pdf_gp="+str(pdf_gp)+", bka="+str(bka)+", ff_hg="+str(ff_hg))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq + pdf_gp*bka*ff_hg)
 
         return a
@@ -73,9 +78,9 @@ class Master():
         xf = self.get_xf()
         m = 0.0
 
-        for i in self.flavors():
-            self.color = i
-            m += integrate.quadrature(self.integrand, xf, 1.0, tol) # integral
+        for i in self.flavors:
+            self.f = i
+            m += integrate.quad(self.integrand, xf, 1.0)[0] # integral
 
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
