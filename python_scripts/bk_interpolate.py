@@ -21,33 +21,46 @@ class N():
         self.df["vr"] = self.df["vr"].astype('float64')
         self.df["vfr"] = self.df["vfr"].astype('float64')
 
-        self.r = self.df.vr.to_numpy(dtype = 'float64')
-        self.y = self.df.y.to_numpy(dtype = 'float32')
-        self.n = self.df.vfr.to_numpy(dtype = 'float64')
+        self.r = np.unique(self.df.vr.to_numpy(dtype = 'float64'))
+#        self.y = self.df.y.to_numpy(dtype = 'float32')
+#        self.n = self.df.vfr.to_numpy(dtype = 'float64')
+        
+        
+        self.interp_y = []  # to be filled by interpolated functions over r at some fixed y
+        for i in np.arange(0.0, 30.0, 0.1):
+            sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['y'] == i)]
+            x_ = np.concatenate(sub_[['vr']].to_numpy(), axis=0)
+            y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
 
-        self.funcs = []
-        for i in np.arange(0.0,30.0,0.10):
-            sub_ = self.df.loc[(self.df['kuta'] == 4.0) & (self.df['y'] == i)]
+            self.interp_y.append(interpolate.CubicSpline(x_,y_))
 
-            x = sub_[['vr']].to_numpy()
+
+        self.interp_r = []  # to be filled by interpolated functions over y at some fixed r
+        for r_ in self.r:
+            sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['vr'] == r_)]
+            x_ = np.concatenate(sub_[['y']].to_numpy(), axis=0)
+            y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
+
+            self.interp_r.append(interpolate.CubicSpline(x_, y_))
+
 
     def bk_f(self,y): # fundamental representation
+
+        rap = np.arange(0.0, 30.0, 0.1)
         # search file to see if interpolation already exists !!!
+        
+        if y in rap:
+            i = np.where(rap == y)[0][0]
+            return self.interp_y[i]
+        else:
+            a = np.zeros(len(self.r))
+            for i in range(len(a)):
+                f = self.interp_r[i]
+                a[i] = f(y)
+            return interpolate.CubicSpline(self.r, a)
 
-        # isolating part of df containing r, N(r,Y) values for rapidity scale of interest
-        sub_ = self.df.loc[(self.df['kuta'] == 4.0) & (self.df['y'] == y)]
-
-        # x_ = np.concatenate(sub_[['vr']].to_numpy(), axis = 0)
-        # y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis = 0)
-    
-        x_ = sub_[['vr']].to_numpy()
-        y_ = sub_[['vfr']].to_numpy()
-
-        f = interpolate.CubicSpline(x_, y_) # creates interpolation
 
         # write interpolated object to file !!!
-
-        return f
 
     def bk_a(self, y):
         f = self.bk_f(y)
@@ -75,3 +88,4 @@ class N():
 
 if __name__ == "__main__":
     n = N()
+    n.bk_f(2.15)
