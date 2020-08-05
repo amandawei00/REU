@@ -64,7 +64,10 @@ class N():
 
     def bk_a(self, y):
         f = self.bk_f(y)
-        return 2*f - np.power(f,2)
+        x = self.r
+
+        g = 2*f(x) - np.power(f(x),2)
+        return interpolate.CubicSpline(self.r, g)
 
     def udg_f(self, x,  k):
         f = self.bk_f(np.log(self.x0/x))
@@ -73,7 +76,7 @@ class N():
 
     def udg_a(self, x, k):
         f = self.bk_a(np.log(self.x0/x))
-        integrand = lambda r: (1-f(r))*self.bessel(k*r,0)
+        integrand = lambda r_: (1 - f(r_))*self.bessel(k*r_,0)
         return 2*intg.quad(integrand, 0, self.xr2)[0]
 
     def bessel(self, x, alpha):
