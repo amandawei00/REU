@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import scipy.integrate as integrate
+import csv
 
 sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
@@ -39,7 +40,6 @@ class Master():
         return xf
 ####################################################################################################################################
     def integrand(self,z):
-        print("integrand called")
         xf = self.get_xf()
 
         x1 = xf/z
@@ -47,15 +47,30 @@ class Master():
         q = self.p_t
         q2 = q*q
 
-        if self.f == -3: i = 5
-        elif self.f == -2: i = 1
-        elif self.f == -1: i = 3
-        elif self.f == 1: i = 2
-        elif self.f == 2: i = 0
-        elif self.f == 3: i = 4
-        elif self.f == 21: i = 8
+        qual = ''
+        if self.f == -3: 
+            i = 5
+            qual = 'anti-strange quark'
+        elif self.f == -2: 
+            i = 1
+            qual = 'anti-up quark'
+        elif self.f == -1: 
+            i = 3
+            qual = 'anti-down quark'
+        elif self.f == 1: 
+            i = 2
+            qual = 'down quark'
+        elif self.f == 2: 
+            i = 0
+            qual = 'up quark'
+        elif self.f == 3: 
+            i = 4
+            qual = 'strange'
+        elif self.f == 21: 
+            i = 8
+            qual = 'gluons'
         else:
-            print("lol nah")
+            print("charm/bottom quark")
             return 0.0
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
@@ -68,8 +83,8 @@ class Master():
         # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
         ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
-        print("pdf_qp="+str(pdf_qp)+", bkf="+str(bkf)+", ff_hq="+str(ff_hq))
-        print("pdf_gp="+str(pdf_gp)+", bka="+str(bka)+", ff_hg="+str(ff_hg))
+        print("type: " + qual)
+        print("pdf_q=" + str(pdf_qp) + ", bkf=" + str(bkf) + ", ff_q=" + str(ff_hq) + ", pdf_g="+str(pdf_gp) +", bka="+str(bka)+", ff_g="+str(ff_hg))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq + pdf_gp*bka*ff_hg)
 
         return a
@@ -87,11 +102,23 @@ class Master():
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-   ih = 'pi0' # hadron type
-   y = 3.3
-   s_NN = np.power(200,2) # GeV
-   qsq2 = 0.4
-   K = 0.4
+    ih = 'pi0' # hadron type
+    y = 3.3
+    s_NN = np.power(200,2) # GeV
+    qsq2 = 0.4
+    K = 0.4
 
-   s = Master(y, s_NN, qsq2, K, ih)
-   print(s.rhs(2.0))
+    s = Master(y, s_NN, qsq2, K, ih)
+   
+    n = 8
+    a = 1.0
+    b = 4.5
+    dp_t = (b - a)/n
+
+    p_t = np.arange(a,b,dp_t)
+    cs = [s.rhs(p_t[i]) for i in range(len(p_t))]
+
+    with open('output.csv', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter = '  ')
+        for i in range(len(p_t)):
+            writer.writerow([p_t[i],cs[i]])
