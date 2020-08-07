@@ -70,7 +70,6 @@ class Master():
             i = 8
             qual = 'gluons'
         else:
-            print("charm/bottom quark")
             return 0.0
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
@@ -83,8 +82,8 @@ class Master():
         # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
         ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
-        print("type: " + qual)
-        print("pdf_q=" + str(pdf_qp) + ", bkf=" + str(bkf) + ", ff_q=" + str(ff_hq) + ", pdf_g="+str(pdf_gp) +", bka="+str(bka)+", ff_g="+str(ff_hg))
+#        print("type: " + qual)
+#        print("pdf_q=" + str(pdf_qp) + ", bkf=" + str(bkf) + ", ff_q=" + str(ff_hq) + ", pdf_g="+str(pdf_gp) +", bka="+str(bka)+", ff_g="+str(ff_hg))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq + pdf_gp*bka*ff_hg)
 
         return a
@@ -110,15 +109,20 @@ if __name__=="__main__":
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    n = 8
+    n = 3
     a = 1.0
     b = 4.5
     dp_t = (b - a)/n
 
     p_t = np.arange(a,b,dp_t)
-    cs = [s.rhs(p_t[i]) for i in range(len(p_t))]
+    cs = np.zeros(len(p_t))
+    for i in range(len(p_t)):
+        cs[i] = s.rhs(p_t[i])
+        print(str(p_t[i])+", "+str(cs[i]))
 
-    with open('output.csv', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter = '  ')
+
+    with open('output.csv', "w") as csvfile:
+        writer = csv.writer(csvfile, delimiter = '\t')
+        
         for i in range(len(p_t)):
             writer.writerow([p_t[i],cs[i]])
