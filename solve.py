@@ -4,10 +4,12 @@ import scipy.integrate as integrate
 import csv
 import matplotlib.pyplot as plt
 
-sys.path.append("DSS14_Python")
+# sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
+sys.path.append("DSSLIB")
 
-from DSS14 import DSS
+# from DSS14_Python import DSS
+from DSSLIB import DSS
 import lhapdf as pdf
 from bk_interpolate import N
 
@@ -67,21 +69,12 @@ class Master():
         elif self.f == 3: 
             i = 4
             qual = 'strange'
-#        elif self.f == 21: 
-#            i = 8
-#            qual = 'gluons'
         else:
             return 0.0
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
         bkf = self.n.udg_f(x2,q/z)
-        # ff_hq = self.ff.fDSS(4,-1,0,z,q2)[i] # for negatively charged hadron DEFINE i HERE SPECIFIC TO COLOR
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
-
-#        pdf_gp = self.p.xfxQ2(21,x1,q2) # 21 for gluon
-#        bka = self.n.udg_a(x2,q/z)
-        # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
-#        ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
@@ -104,6 +97,7 @@ class Master():
 
         return (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
 
+################################################################################################################################
     def rhs(self,pt): # DEFINE TOL
         self.p_t = pt
         xf = self.get_xf()
@@ -118,17 +112,17 @@ class Master():
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-    ih = 'pi0' # hadron type
-    y = 4.0
+    ih = 'h-' # hadron type
+    y = 2.2
     s_NN = np.power(200,2) # GeV
     qsq2 = 0.4
-    K = 0.4
+    K = 1.0
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    n = 8
-    a = 1.0
-    b = 4.5
+    n = 12
+    a = 0.5
+    b = 5.0
     dp_t = (b - a)/n
 
     p_t = np.arange(a,b,dp_t)
@@ -138,7 +132,7 @@ if __name__=="__main__":
         print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output.csv', "w") as csvfile:
+    with open('output_h-_y-2.2.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):

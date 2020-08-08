@@ -1,4 +1,4 @@
-export fDSS14PATH=`pwd`
+export fDSSPATH=`pwd`
 
 
 
