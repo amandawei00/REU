@@ -2,13 +2,12 @@
 import sys,os
 import numpy as np
 import dssfpi,dssfk,dssfh
-from tools.config import conf
 
 class DSS:
   
   def __init__(self,conf):
 
-    root=conf['path2DSS']
+    root='./'
     if root.endswith('/')==False: root+='/'
 
     self.io=0
@@ -39,13 +38,3 @@ class DSS:
     elif hadron=='h+':return self._get_f(z,Q2,self.h,dssfh.fdss,4,1)
     elif hadron=='h-':return self._get_f(z,Q2,self.h,dssfh.fdss,4,-1)
     elif hadron=='h0':return self._get_f(z,Q2,self.h,dssfh.fdss,4,0)
-
-if __name__=='__main__':
-
-  conf['path2DSS']='./'
-
-  dss=DSS(conf)
-  print dss.get_f(0.5,10,'pi+')
-  print dss.get_f(0.5,10,'pi-')
-
-
