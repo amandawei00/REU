@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import scipy.integrate as integrate
 import csv
+import matplotlib.pyplot as plt
 
 sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
@@ -66,9 +67,9 @@ class Master():
         elif self.f == 3: 
             i = 4
             qual = 'strange'
-        elif self.f == 21: 
-            i = 8
-            qual = 'gluons'
+#        elif self.f == 21: 
+#            i = 8
+#            qual = 'gluons'
         else:
             return 0.0
 
@@ -77,39 +78,55 @@ class Master():
         # ff_hq = self.ff.fDSS(4,-1,0,z,q2)[i] # for negatively charged hadron DEFINE i HERE SPECIFIC TO COLOR
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
-        pdf_gp = self.p.xfxQ2(21,x1,q2) # 21 for gluon
-        bka = self.n.udg_a(x2,q/z)
+#        pdf_gp = self.p.xfxQ2(21,x1,q2) # 21 for gluon
+#        bka = self.n.udg_a(x2,q/z)
         # ff_hg = self.ff.fDSS(4,-1,0,z,q2)[8]
-        ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
+#        ff_hg = self.ff.get_f(z,q2,self.hadron)[8]
 
-#        print("type: " + qual)
-#        print("pdf_q=" + str(pdf_qp) + ", bkf=" + str(bkf) + ", ff_q=" + str(ff_hq) + ", pdf_g="+str(pdf_gp) +", bka="+str(bka)+", ff_g="+str(ff_hg))
-        a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq + pdf_gp*bka*ff_hg)
+        a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
         return a
 ###################################################################################################################################
+    def integrand1(self, z):
+        xf = self.get_xf()
+
+        x1 = xf/z
+        x2 = x1*np.exp(-2*self.yh)
+        q = self.p_t
+        q2 = q*q
+
+        # if self.f == 21
+        i=8 # for gluons
+
+        pdf_gp = self.p.xfxQ2(self.f,x1,q2)
+        bka = self.n.udg_a(x2,q/z)
+        ff_hg = self.ff.get_f(z,q2,self.hadron)[i]
+
+        return (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
+
     def rhs(self,pt): # DEFINE TOL
         self.p_t = pt
         xf = self.get_xf()
         m = 0.0
 
+        gluon_intg = integrate.quad(self.integrand1, xf, 1.0)[0]
         for i in self.flavors:
             self.f = i
-            m += integrate.quad(self.integrand, xf, 1.0)[0] # integral
+            m += integrate.quad(self.integrand, xf, 1.0)[0] + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
     ih = 'pi0' # hadron type
-    y = 3.3
+    y = 4.0
     s_NN = np.power(200,2) # GeV
     qsq2 = 0.4
     K = 0.4
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    n = 3
+    n = 8
     a = 1.0
     b = 4.5
     dp_t = (b - a)/n
@@ -126,3 +143,6 @@ if __name__=="__main__":
         
         for i in range(len(p_t)):
             writer.writerow([p_t[i],cs[i]])
+
+    plt.plot(p_t, cs)
+    plt.show()

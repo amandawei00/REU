@@ -72,12 +72,12 @@ class N():
     def udg_f(self, x,  k):
         f = self.bk_f(np.log(self.x0/x))
         integrand = lambda r: (1 - f(r))*self.bessel(k*r,0)
-        return 2*intg.quad(integrand, 0, self.xr2)[0]
+        return 2*intg.quad(integrand, 0, self.xr2,epsabs=0.0,epsrel=0.01)[0]
 
     def udg_a(self, x, k):
         f = self.bk_a(np.log(self.x0/x))
         integrand = lambda r_: (1 - f(r_))*self.bessel(k*r_,0)
-        return 2*intg.quad(integrand, 0, self.xr2)[0]
+        return 2*intg.quad(integrand, 0, self.xr2,epsabs=0.0,epsrel=0.01)[0]
 
     def bessel(self, x, alpha):
         f = lambda t: np.cos(alpha*t - x*np.sin(t))
