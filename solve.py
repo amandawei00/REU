@@ -9,14 +9,12 @@ sys.path.append("python_scripts")
 sys.path.append("DSSLIB")
 
 # from DSS14_Python import DSS
-from DSSLIB import DSS
+from DSS_Python import DSS
 import lhapdf as pdf
 from bk_interpolate import N
 
 # MAKE USER FRIENDLY
 # - IH FOR HADRON TYPE, IC FOR HADRON CHARGE SHOULD BE MODIFIABLE AND INITIATED UPON CONSTRUCTION
-# - FIX FRAGMENTATION FUNCTION
-# - FINISH CODE FOR BK INTERPOLATION
 
 class Master():
     def __init__(self,y,s_NN,qsq,K,h):
@@ -76,6 +74,8 @@ class Master():
         bkf = self.n.udg_f(x2,q/z)
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
+        # print("pdf_q = " + str(pdf_qp) + ", bkf = " + str(bkf) + ", ff_hq = " + str(ff_hq))
+        print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
         return a
@@ -94,7 +94,6 @@ class Master():
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
         bka = self.n.udg_a(x2,q/z)
         ff_hg = self.ff.get_f(z,q2,self.hadron)[i]
-
         return (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
 
 ################################################################################################################################
@@ -106,22 +105,24 @@ class Master():
         gluon_intg = integrate.quad(self.integrand1, xf, 1.0)[0]
         for i in self.flavors:
             self.f = i
-            m += integrate.quad(self.integrand, xf, 1.0)[0] + gluon_intg # integral
+            quark = integrate.quad(self.integrand,xf,1.0)[0]
+            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+            m += quark + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
     ih = 'h-' # hadron type
-    y = 2.2
+    y = 3.2
     s_NN = np.power(200,2) # GeV
     qsq2 = 0.4
     K = 1.0
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    n = 12
-    a = 0.5
+    n = 8
+    a = 1.1
     b = 5.0
     dp_t = (b - a)/n
 
@@ -132,7 +133,7 @@ if __name__=="__main__":
         print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output_h-_y-2.2.csv', "w") as csvfile:
+    with open('output_h-_y-3.2.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):

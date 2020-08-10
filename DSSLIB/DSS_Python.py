@@ -5,8 +5,8 @@ import dssfpi,dssfk,dssfh
 
 class DSS:
   
-  def __init__(self,conf):
-
+#  def __init__(self,conf):
+  def __init__(self):
     root='./'
     if root.endswith('/')==False: root+='/'
 
