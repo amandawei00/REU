@@ -113,11 +113,11 @@ class Master():
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-    ih = 'h-' # hadron type
-    y = 2.2
+    ih = 'pi0' # hadron type
+    y = 3.3
     s_NN = np.power(200,2) # GeV
-    qsq2 = 0.4
-    K = 1.0
+    qsq2 = 0.2
+    K = 0.4
 
     s = Master(y, s_NN, qsq2, K, ih)
    
@@ -126,14 +126,15 @@ if __name__=="__main__":
     b = 5.0
     dp_t = (b - a)/n
 
-    p_t = np.arange(a,b,dp_t)
+    # p_t = np.arange(a,b,dp_t)
+    p_t = [1.1, 2.0, 2.5, 3.0, 3.5, 4.0, 4.4]
     cs = np.zeros(len(p_t))
     for i in range(len(p_t)):
         cs[i] = s.rhs(p_t[i])
         print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output_h-_y-2.2_sNN-200.csv', "w") as csvfile:
+    with open('output_pi0_y-3.3_cteq10nlo.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):

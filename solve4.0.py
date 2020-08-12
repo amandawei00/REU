@@ -114,7 +114,7 @@ class Master():
         
 if __name__=="__main__":
     ih = 'pi0' # hadron type
-    y = 3.3
+    y = 4.0
     s_NN = np.power(200,2) # GeV
     qsq2 = 0.2
     K = 0.4
@@ -134,7 +134,7 @@ if __name__=="__main__":
         print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output_h-_y-3.3_sNN-200.csv', "w") as csvfile:
+    with open('output_pi0_y-4.0_cteq10nlo.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):
