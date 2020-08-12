@@ -127,7 +127,7 @@ if __name__=="__main__":
     dp_t = (b - a)/n
 
     # p_t = np.arange(a,b,dp_t)
-    p_t = [1.1, 1.5, 2.0, 2.]
+    p_t = [1.01, 1.5, 2.0, 2.]
     cs = np.zeros(len(p_t))
     for i in range(len(p_t)):
         cs[i] = s.rhs(p_t[i])
