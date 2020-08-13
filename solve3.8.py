@@ -75,7 +75,7 @@ class Master():
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
         # print("pdf_q = " + str(pdf_qp) + ", bkf = " + str(bkf) + ", ff_hq = " + str(ff_hq))
-        print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
+#        print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
         return a
@@ -106,7 +106,7 @@ class Master():
         for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0)[0]
-            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+#            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
@@ -116,7 +116,7 @@ if __name__=="__main__":
     ih = 'pi0' # hadron type
     y = 3.8
     s_NN = np.power(200,2) # GeV
-    qsq2 = 0.2
+    qsq2 = 0.4
     K = 0.4
 
     s = Master(y, s_NN, qsq2, K, ih)
@@ -127,14 +127,14 @@ if __name__=="__main__":
     dp_t = (b - a)/n
 
     # p_t = np.arange(a,b,dp_t)
-    p_t = [1.1,2.0,2.5,3.0]
+    p_t = [1.01,2.0,2.5,3.0]
     cs = np.zeros(len(p_t))
     for i in range(len(p_t)):
         cs[i] = s.rhs(p_t[i])
         print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output_h-_y-3.8_cteq10nlo.csv', "w") as csvfile:
+    with open('output_h-_y-3.8_nlo_k-0.3_q-0.4.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):
