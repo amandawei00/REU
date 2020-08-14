@@ -18,8 +18,8 @@ from bk_interpolate import N
 
 class Master():
     def __init__(self,y,s_NN,qsq,K,h):
-        self.p = pdf.mkPDF("CT10nlo",0)
-        self.p = pdf.mkPDF("CT10nlo/0")
+        self.p = pdf.mkPDF("CT10",0)
+        self.p = pdf.mkPDF("CT10/0")
 
         self.n = N()
         self.ff = DSS()
@@ -75,7 +75,7 @@ class Master():
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
         # print("pdf_q = " + str(pdf_qp) + ", bkf = " + str(bkf) + ", ff_hq = " + str(ff_hq))
-       #  print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
+        print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
         return a
@@ -106,8 +106,9 @@ class Master():
         for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0)[0]
-         #   print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
+
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
@@ -116,28 +117,27 @@ if __name__=="__main__":
     y = 3.3
     s_NN = np.power(200,2) # GeV
     qsq2 = 0.4
-    K = 0.4
+    K = 1.0
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-   # n = 4
-   # a = 1.1
-   # b = 5.0
-   # dp_t = (b - a)/n
+    n = 5
+    a = 1.01
+    b = 5.0
+    dp_t = (b - a)/n
 
-    # p_t = np.arange(a,b,dp_t)
-    ptgrid = [1.01, 2.0, 2.5, 3.0, 3.5, 4.0, 4.4]
-    cs = []
-    for i in range(len(ptgrid)):
-        cs.append(s.rhs(ptgrid[i]))
-        print(str(ptgrid[i])+", "+str(cs[i]))
+    p_t = np.arange(a,b,dp_t)    
+    cs = np.zeros(len(p_t))
+    for i in range(len(p_t)):
+        cs[i] = s.rhs(p_t[i])
+        print(str(p_t[i])+", "+str(cs[i]))
 
 
-    with open('output_pi0_y-3.3_nlo_k-0.3_q-0.4.csv', "w") as csvfile:
+    with open('output_pi0_y-3.3_x0-0.015.csv', "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):
-            writer.writerow([ptgrid[i],cs[i]])
+            writer.writerow([p_t[i],cs[i]])
 
-    plt.plot(ptgrid, cs)
+    plt.plot(p_t, cs)
     plt.show()
