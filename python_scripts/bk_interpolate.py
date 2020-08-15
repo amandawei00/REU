@@ -7,7 +7,7 @@ import csv
 class N():
     def __init__(self):
         self.n_ = 400
-        self.x0 = 0.025
+        self.x0 = 0.02
         self.xr1 = np.log(3.e-6)
         self.xr2 = np.log(60.e0) # limit of integration in fourier transform calculation
 
