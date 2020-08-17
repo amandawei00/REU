@@ -1,6 +1,6 @@
 import csv
 
-txt = "results_c.txt"
+txt = "results_neg-rap.txt"
 cs = "cresults.csv"
 
 in_txt = csv.reader(open(txt, "rb"), delimiter='\t')
