@@ -4,16 +4,22 @@ import scipy.integrate as intg
 import pandas as pd
 import csv
 import time
+import sys
+import matplotlib.pyplot as plt
+
+#sys.path.append("Ogata/python")
+#from FBT import FBT
 
 class N():
     def __init__(self):
         self.n_ = 400
         self.x0 = 0.02
-        self.xr1 = np.log(3.e-6)
+        #self.xr1 = np.log(3.e-6)
+        self.xr1 = 0.0
         self.xr2 = np.log(60.e0) # limit of integration in fourier transform calculation
 
         # read results.csv file from BK solution to pandas dataframe
-        self.df = pd.read_csv("results_ATLAS.csv", sep="\s+")
+        self.df = pd.read_csv("cresults.csv", sep="\s+")
         self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
 
         # converting dataframe element types
@@ -74,24 +80,18 @@ class N():
         return interpolate.CubicSpline(self.r, g)
 
     def udg_f(self, x,  k):
-#        t1 = time.time()
         f = self.bk_f(np.log(self.x0/x))
-#        t2 = time.time()
-        integrand = lambda r: (1 - f(r))*self.bessel(k*r,0)
-#        t3 = time.time()
-        g = 2*intg.quad(integrand, self.xr1, self.xr2,epsabs=0.0,epsrel=0.01)[0]
-#        t4 = time.time()
-#        print(str(t2-t1) + " " + str(t3-t2) + " " + str(t4-t3))
-        return g
+        integrand = lambda r: (1-f(r))*self.bessel(k*r,0)
+        return 2*np.pi*intg.quad(integrand, self.xr1,self.xr2, epsabs=1.e-4)[0]
 
     def udg_a(self, x, k):
         f = self.bk_a(np.log(self.x0/x))
         integrand = lambda r_: (1 - f(r_))*self.bessel(k*r_,0)
-        return 2*intg.quad(integrand, 0, self.xr2,epsabs=0.0,epsrel=0.01)[0]
+        return 2*np.pi*intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
 
     def bessel(self, x, alpha):
         f = lambda t: np.cos(alpha*t - x*np.sin(t))
-        return (1/np.pi)*intg.quad(f,0,np.pi, epsabs=0.0, epsrel=0.01)[0]
+        return (1/np.pi)*intg.quad(f,0,np.pi, epsabs=1.e-3)[0]
 
     # def bessel_intg(self,k):
     #    f = lambda u: (u/np.power(k,2)) * self.bessel(u,0)
@@ -103,4 +103,19 @@ if __name__ == "__main__":
     n = N()
     x = 0.002463981259066879
     k = 71.1797503982
+    x0 = 0.02
+
+    x_range = np.arange(0.1,1.0,0.1)
+    integrand = lambda x_,r_: (1-n.bk_f(np.log(x0/x_)))*n.bessel(k*r_,0)
+
+#    r_range = np.arange(n.xr1, n.xr2, 0.1)
+
+#    for i in range(len(x_range)):
+#        x = x_range[i]
+        
+#        y_ = [integrand(r,x) for r in r_range]
+#        plt.plot(r_range,y_)
+
+#    plt.show()
+
     print(n.udg_f(x,k))

@@ -106,14 +106,14 @@ class Master():
         for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0)[0]
-            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+        #    print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-    ih = 'pi0' # hadron type
+    ih = 'h-' # hadron type
     y = 1.75
     s_NN = np.power(5020,2) # GeV
     qsq2 = 0.4
@@ -121,23 +121,15 @@ if __name__=="__main__":
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    n = 16
-    a = 1.01
-    b = 6.5
-    dp_t = (b - a)/n
-
-    p_t = np.arange(a,b,dp_t)
+    p_t = [2.0,3.0,4.0,5.0,6.0]
     cs = np.zeros(len(p_t))
-    for i in range(len(p_t)):
-        cs[i] = s.rhs(p_t[i])
-        print(str(p_t[i])+", "+str(cs[i]))
 
-
-    with open('output_ATLAS', "w") as csvfile:
+    with open('output_cresults_lambda-0.1.csv', 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
-        
         for i in range(len(p_t)):
-            writer.writerow([p_t[i],cs[i]])
+            cs[i] = s.rhs(p_t[i])
+            print(str(p_t[i])+", "+str(cs[i]))
+            writer.writerow([p_t[i], cs[i]])
 
     plt.plot(p_t, cs)
     plt.show()

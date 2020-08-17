@@ -1,7 +1,7 @@
 import csv
 
-txt = "results_ATLAS.txt"
-cs = "results_ATLAS.csv"
+txt = "results_c.txt"
+cs = "cresults.csv"
 
 in_txt = csv.reader(open(txt, "rb"), delimiter='\t')
 out_csv = csv.writer(open(cs, 'wb'))

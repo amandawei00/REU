@@ -106,7 +106,7 @@ class Master():
         for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0)[0]
-            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+        #    print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
