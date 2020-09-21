@@ -121,10 +121,10 @@ if __name__=="__main__":
 
     s = Master(y, s_NN, qsq2, K, ih)
    
-    p_t = [2.0,3.0,4.0,5.0,6.0]
+    p_t = [6.0]
     cs = np.zeros(len(p_t))
 
-    with open('output_cresults_lambda-0.1.csv', 'w') as csvfile:
+    with open('output_cresults_lambda-0.1_pt-6.csv', 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         for i in range(len(p_t)):
             cs[i] = s.rhs(p_t[i])
