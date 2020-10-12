@@ -14,20 +14,17 @@ class N():
         self.xr2 = np.log(60.e0)  # limit of integration in fourier transform calculation
 
         # read results.csv file from BK solution to pandas dataframe
-        self.df1 = pd.read_csv("cresults.csv", sep="\s+")
-        self.df2 = pd.read_csv("results-f.csv", sep="\s+")
-
-        self.df1.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
-        self.df2.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
-
-        self.df = pd.concat([self.df1, self.df2])
-        self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
+	self.df = pd.read_csv("full_bk_results.csv", sep="\t")
+	self.df.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
+        # self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
 
         # converting dataframe element types
         self.df["kuta"] = self.df["kuta"].astype('int')
         self.df["y"] = (self.df["y"].astype('float32')).round(decimals=1)
         self.df["vr"] = self.df["vr"].astype('float64')
         self.df["vfr"] = self.df["vfr"].astype('float64')
+
+	print(self.df)
 
         self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
         #        self.y = self.df.y.to_numpy(dtype = 'float32')

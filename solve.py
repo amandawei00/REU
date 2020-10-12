@@ -18,8 +18,9 @@ from bk_interpolate import N
 
 class Master():
     def __init__(self,y,s_NN,qsq,K,h):
-        self.p = pdf.mkPDF("CT10",0)
-        self.p = pdf.mkPDF("CT10/0")
+#         self.p = pdf.mkPDF("CT10",0)
+#         self.p = pdf.mkPDF("CT10/0")
+	self.p = pdf.mkPDFs("CT10nlo",0)
 
         self.n = N()
         self.ff = DSS()
