@@ -3,6 +3,7 @@ import numpy as np
 import scipy.integrate as integrate
 import csv
 import matplotlib.pyplot as plt
+import subprocess
 
 # sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
@@ -13,14 +14,13 @@ from DSS_Python import DSS
 import lhapdf as pdf
 from bk_interpolate import N
 
-# MAKE USER FRIENDLY
 # - IH FOR HADRON TYPE, IC FOR HADRON CHARGE SHOULD BE MODIFIABLE AND INITIATED UPON CONSTRUCTION
 
 class Master():
-    def __init__(self,y,s_NN,qsq,K,h):
-#         self.p = pdf.mkPDF("CT10",0)
-#         self.p = pdf.mkPDF("CT10/0")
-	self.p = pdf.mkPDFs("CT10nlo",0)
+    def __init__(self, h, y, qsq, s_NN, K):
+        self.p = pdf.mkPDF("CT10",0)
+        self.p = pdf.mkPDF("CT10/0")
+# 	self.p = pdf.mkPDFs("CT10nlo",0)
 
         self.n = N()
         self.ff = DSS()
@@ -75,8 +75,6 @@ class Master():
         bkf = self.n.udg_f(x2,q/z)
         ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
 
-        # print("pdf_q = " + str(pdf_qp) + ", bkf = " + str(bkf) + ", ff_hq = " + str(ff_hq))
-        print("ff_hq = " + str(ff_hq) + ", z = " + str(z) + ", q2 = " + str(q2))
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
         return a
@@ -107,38 +105,64 @@ class Master():
         for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0)[0]
-            print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
+            # print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 
         return m*self.K/np.power(2*np.pi, 2)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":
-    ih = 'h-' # hadron type
-    y = 2.2
-    s_NN = np.power(200,2) # GeV
-    qsq2 = 0.4
-    K = 1.0
 
-    s = Master(y, s_NN, qsq2, K, ih)
+    param = []
+    """ order of parameters in parameters.txt:
+		1. hadron type
+		2. y
+		3. qsq2
+		4. s_NN
+		5. K
+		6. p_t (lower bound)
+		7. p_t (upper bound)
+		8. number of points evaluated """
+
+    with open("parameters.txt", "r") as infile:  # opening parameters file to read in input
+	reader = csv.reader(infile)
+	
+	for r in reader:  
+	    raw = r.split()
+	    param.append(raw[len(raw)-1])  # reading in values
+
+    s = Master(param[0], float(param[1]), float(param[2]), float(param[3]), float(param[4]))  # creating instance of class
    
-    n = 4
-    a = 1.1
-    b = 5.0
+    a = float(param[5])
+    b = float(param[6])
+    n = int(param[7])
     dp_t = (b - a)/n
 
-    p_t = np.arange(a,b,dp_t)
+    p_t = np.arange(a,b,dp_t)  # values of tranverse momenta over which differential cross section will be evaluated
     cs = np.zeros(len(p_t))
-    for i in range(len(p_t)):
-        cs[i] = s.rhs(p_t[i])
-        print(str(p_t[i])+", "+str(cs[i]))
+    
+    with open("temp.csv", "w") as tfile:  # write temporary output file so progress can be checked without interrupting code
+	writer = csv.writer(tfile, delimiter='\t')
+
+    	for i in range(len(p_t)):
+            cs[i] = s.rhs(p_t[i])
+            writer.writerow([p_t[i],cs[i]])
 
 
-    with open('output_h-_y-2.2_sNN-200.csv', "w") as csvfile:
+    fname = "run_1"  # folder name
+    subprocess.run(["mkdir", "output/" + fname])
+    subprocess.run(["cp", "parameters.txt", "output/" + fname])  # copy parameter file to output folder
+    subprocess.run(["cd", "output/" + fname])  # enter directory to write output here
+	
+    with open("results.csv", "w") as csvfile:
         writer = csv.writer(csvfile, delimiter = '\t')
         
         for i in range(len(p_t)):
             writer.writerow([p_t[i],cs[i]])
 
+    subprocess.run(["cd", "../.."])  # return to original directory
+    
     plt.plot(p_t, cs)
     plt.show()
+
+# end of program

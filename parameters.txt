@@ -1,0 +1,8 @@
+hadron type: h-
+rapidity (y): 2.2
+saturation scale (qsq2): 0.4
+collision energy per nucleon (squared) (sNN): 40000
+K factor: 1.0
+transverse momentum (lower bound): 1.1
+transverse momentum (upper bound): 5.0
+number of points evaluated: 4

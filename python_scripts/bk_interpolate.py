@@ -24,11 +24,8 @@ class N():
         self.df["vr"] = self.df["vr"].astype('float64')
         self.df["vfr"] = self.df["vfr"].astype('float64')
 
-	print(self.df)
 
         self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
-        #        self.y = self.df.y.to_numpy(dtype = 'float32')
-        #        self.n = self.df.vfr.to_numpy(dtype = 'float64')
 
         self.interp_y = []  # to be filled by interpolated functions over r at some fixed y
         for i in np.arange(-4.8, 30.0, 0.1):
@@ -51,7 +48,7 @@ class N():
         #        t1 = time.time()
         rap = np.arange(-4.8, 30.0, 0.1)
         # search file to see if interpolation already exists !!!
-
+	print("bk_f y: " + str(y))
         if y in rap:
             i = np.where(rap == y)[0][0]
             return self.interp_y[i]
@@ -65,6 +62,7 @@ class N():
         # write interpolated object to file !!!
 
     def bk_a(self, y):
+	print("bk_a : " + str(y))
         f = self.bk_f(y)
         x = self.r
 
@@ -85,10 +83,6 @@ class N():
         f = lambda t: np.cos(alpha * t - x * np.sin(t))
         return (1 / np.pi) * intg.quad(f, 0, np.pi, epsabs=1.e-3)[0]
 
-    # def bessel_intg(self,k):
-    #    f = lambda u: (u/np.power(k,2)) * self.bessel(u,0)
-    #    return intg.quad(f,0.0,np.inf)
-
 
 # end of class
 
@@ -99,17 +93,3 @@ if __name__ == "__main__":
     x0 = 0.02
 
     n.bk_f(-1.0)
-    # x_range = np.arange(0.1,1.0,0.1)
-    # integrand = lambda x_,r_: (1-n.bk_f(np.log(x0/x_)))*n.bessel(k*r_,0)
-
-#    r_range = np.arange(n.xr1, n.xr2, 0.1)
-
-#    for i in range(len(x_range)):
-#        x = x_range[i]
-
-#        y_ = [integrand(r,x) for r in r_range]
-#        plt.plot(r_range,y_)
-
-#    plt.show()
-
-# print(n.udg_f(x,k))
