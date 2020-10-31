@@ -2,7 +2,7 @@
 # from FBT import FBT
 import numpy as np
 import pandas as pd
-import scipy.interpolate as interpolate
+from scipy.interpolate import interp1d
 import scipy.integrate as intg
 
 class N():
@@ -24,29 +24,42 @@ class N():
         self.df["vr"] = self.df["vr"].astype('float64')
         self.df["vfr"] = self.df["vfr"].astype('float64')
 
-
-        self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
+	# self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
+	nump_vr = np.array(self.df.vr, dtype=np.float64)
+	self.r = np.unique(nump_vr)
 
         self.interp_y = []  # to be filled by interpolated functions over r at some fixed y
-        for i in np.arange(-4.8, 30.0, 0.1):
+        for i in np.arange(-4.9, 30.0, 0.1):
             sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['y'] == i.round(decimals=1))]
-            x_ = np.concatenate(sub_[['vr']].to_numpy(), axis=0)
-            y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
+	    
+	    s1 = np.array(sub_[['vr']])
+	    s2 = np.array(sub_[['vfr']])
 
-            self.interp_y.append(interpolate.CubicSpline(x_, y_))
+	    x_ = np.concatenate(s1, axis=0)
+	    y_ = np.concatenate(s2, axis=0)
+
+            #  x_ = np.concatenate(sub_[['vr']].to_numpy(), axis=0)
+            #  y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
+
+            self.interp_y.append(interp1d(x_, y_, kind='cubic'))
 
         self.interp_r = []  # to be filled by interpolated functions over y at some fixed r
         for r_ in self.r:
-            sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['vr'] == r_)].sort_values(by='y')
-            # sub_ = sub_.sort_values(by='y')
-            x_ = np.concatenate(sub_[['y']].to_numpy(), axis=0)
-            y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
-            self.interp_r.append(interpolate.CubicSpline(x_, y_))
+            sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['vr'] == r_)]
+
+	    s1 = np.array(sub_[['y']])
+	    s2 = np.array(sub_[['vfr']])
+	
+	    x_ = np.concatenate(s1, axis=0)
+	    y_ = np.concatenate(s2, axis=0)
+            # x_ = np.concatenate(sub_[['y']].to_numpy(), axis=0)
+            # y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
+            self.interp_r.append(interp1d(x_, y_, kind='cubic'))
 
     def bk_f(self, y):  # fundamental representation
 
         #        t1 = time.time()
-        rap = np.arange(-4.8, 30.0, 0.1)
+        rap = np.arange(-4.9, 30.0, 0.1)
         # search file to see if interpolation already exists !!!
 	print("bk_f y: " + str(y))
         if y in rap:
@@ -57,7 +70,7 @@ class N():
             for i in range(len(a)):
                 f = self.interp_r[i]
                 a[i] = f(y)
-            return interpolate.CubicSpline(self.r, a)
+            return interp1d(self.r, a, kind='cubic')
 
         # write interpolated object to file !!!
 
@@ -67,7 +80,7 @@ class N():
         x = self.r
 
         g = 2 * f(x) - np.power(f(x), 2)
-        return interpolate.CubicSpline(self.r, g)
+        return interp1d(self.r, g, kind='cubic')
 
     def udg_f(self, x, k):
         f = self.bk_f(np.log(self.x0 / x))

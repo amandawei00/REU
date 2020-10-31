@@ -7,10 +7,10 @@ import subprocess
 
 # sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
-sys.path.append("DSSLIB")
+# sys.path.append("DSSLIB")
 
-# from DSS14_Python import DSS
-from DSS_Python import DSS
+# from DSS14_Python import DSS14
+# from DSS_Python import DSS
 import lhapdf as pdf
 from bk_interpolate import N
 
@@ -23,7 +23,8 @@ class Master():
 # 	self.p = pdf.mkPDFs("CT10nlo",0)
 
         self.n = N()
-        self.ff = DSS()
+        self.ff = pdf.mkPDF("DSS07PI",0)
+	self.ff = pdf.mkPDF("CT10",1)
 
         self.qsq2 = qsq # saturation scale
         self.sNN = s_NN # collision energy per nucleon [GeV]
@@ -36,6 +37,8 @@ class Master():
 
         self.p_t = 0.0 # plotting points w respect to p_t
         self.yh = y
+	
+	print("class successfully instantiated")
  ###################################################################################################################################
     def get_xf(self):
         xf = (self.p_t/np.sqrt(self.sNN))*np.exp(self.yh)
@@ -128,7 +131,7 @@ if __name__=="__main__":
 	reader = csv.reader(infile)
 	
 	for r in reader:  
-	    raw = r.split()
+	    raw = r[0].split()
 	    param.append(raw[len(raw)-1])  # reading in values
 
     s = Master(param[0], float(param[1]), float(param[2]), float(param[3]), float(param[4]))  # creating instance of class
