@@ -1,21 +1,23 @@
-# sys.path.append("Ogata/python")
 # from FBT import FBT
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 import scipy.integrate as intg
 
-class N():
+
+class N:
+
     def __init__(self):
         self.n_ = 400
         self.x0 = 0.02
-        # self.xr1 = np.log(3.e-6)
-        self.xr1 = 0.0
+        self.xr1 = np.log(3.e-6)
+        # self.xr1 = 0.0
         self.xr2 = np.log(60.e0)  # limit of integration in fourier transform calculation
+        tol = 1.e-8
 
         # read results.csv file from BK solution to pandas dataframe
-	self.df = pd.read_csv("full_bk_results.csv", sep="\t")
-	self.df.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
+        self.df = pd.read_csv("full_bk_results.csv", sep="\t")
+        self.df.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
         # self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
 
         # converting dataframe element types
@@ -24,49 +26,43 @@ class N():
         self.df["vr"] = self.df["vr"].astype('float64')
         self.df["vfr"] = self.df["vfr"].astype('float64')
 
-	# self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
-	nump_vr = np.array(self.df.vr, dtype=np.float64)
-	self.r = np.unique(nump_vr)
+        self.df = self.df.loc[(self.df['kuta'] == 4)]  # only consider 4th-order RK solutions
+
+        # self.r = np.unique(self.df.vr.to_numpy(dtype='float64'))
+        # nump_vr = np.array(self.df.vr, dtype=np.float64)
+        # self.r = list(dict.fromkeys(nump_vr))
+        self.r = np.concatenate(np.array(self.df.loc[self.df['y'] == 0.][['vr']]))  # r values over which N(r,Y) are evaluated
+        self.y_vals = np.unique(np.array(self.df[['y']]))
 
         self.interp_y = []  # to be filled by interpolated functions over r at some fixed y
-        for i in np.arange(-4.9, 30.0, 0.1):
+        for i in self.y_vals:
             sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['y'] == i.round(decimals=1))]
-	    
-	    s1 = np.array(sub_[['vr']])
-	    s2 = np.array(sub_[['vfr']])
-
-	    x_ = np.concatenate(s1, axis=0)
-	    y_ = np.concatenate(s2, axis=0)
-
-            #  x_ = np.concatenate(sub_[['vr']].to_numpy(), axis=0)
-            #  y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
+            x_ = np.concatenate(np.array(sub_[['vr']]), axis=0)
+            y_ = np.concatenate(np.array(sub_[['vfr']]), axis=0)
 
             self.interp_y.append(interp1d(x_, y_, kind='cubic'))
 
         self.interp_r = []  # to be filled by interpolated functions over y at some fixed r
         for r_ in self.r:
-            sub_ = self.df.loc[(self.df['kuta'] == 4) & (self.df['vr'] == r_)]
+            sub_ = self.df[(self.df['vr'] < (r_ + tol)) & (self.df['vr'] > (r_ - tol))]  # all_y = self.df['y']
+            x_ = np.concatenate(np.array(sub_[['y']]), axis=0)  # np.concatenate is needed because np.array returns an array of arrays
+            y_ = np.concatenate(np.array(sub_[['vfr']]), axis=0)
 
-	    s1 = np.array(sub_[['y']])
-	    s2 = np.array(sub_[['vfr']])
-	
-	    x_ = np.concatenate(s1, axis=0)
-	    y_ = np.concatenate(s2, axis=0)
+            # print(x_)
+            # print(y_)
             # x_ = np.concatenate(sub_[['y']].to_numpy(), axis=0)
             # y_ = np.concatenate(sub_[['vfr']].to_numpy(), axis=0)
             self.interp_r.append(interp1d(x_, y_, kind='cubic'))
 
     def bk_f(self, y):  # fundamental representation
-
         #        t1 = time.time()
-        rap = np.arange(-4.9, 30.0, 0.1)
+        rap = np.around(np.arange(-4.9, 30.0, 0.1), 2)  # must round np.arange values to 2 decimal places
         # search file to see if interpolation already exists !!!
-	print("bk_f y: " + str(y))
         if y in rap:
             i = np.where(rap == y)[0][0]
             return self.interp_y[i]
         else:
-            a = np.zeros(len(self.r))
+            a = np.zeros(len(self.r))  # to be filled with N(r,y) values over which to interpolate
             for i in range(len(a)):
                 f = self.interp_r[i]
                 a[i] = f(y)
@@ -75,7 +71,7 @@ class N():
         # write interpolated object to file !!!
 
     def bk_a(self, y):
-	print("bk_a : " + str(y))
+        print("bk_a : " + str(y))
         f = self.bk_f(y)
         x = self.r
 
@@ -101,8 +97,8 @@ class N():
 
 if __name__ == "__main__":
     n = N()
-    x = 0.002463981259066879
-    k = 71.1797503982
-    x0 = 0.02
+    # x = 0.002463981259066879
+    # k = 71.1797503982
+    # x0 = 0.02
 
-    n.bk_f(-1.0)
+    print(n.bk_f(-0.01))
