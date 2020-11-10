@@ -24,8 +24,8 @@ class Master():
 
         self.n = N()
         self.ff = pdf.mkPDF("DSS07PI",0)
-	self.ff = pdf.mkPDF("CT10",1)
 
+	print("done done ")
         self.qsq2 = qsq # saturation scale
         self.sNN = s_NN # collision energy per nucleon [GeV]
         self.K = K
@@ -52,7 +52,7 @@ class Master():
         q = self.p_t
         q2 = q*q
 
-        qual = ''
+        """qual = ''
         if self.f == -3: 
             i = 5
             qual = 'anti-strange quark'
@@ -72,11 +72,11 @@ class Master():
             i = 4
             qual = 'strange'
         else:
-            return 0.0
+            return 0.0 """
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
         bkf = self.n.udg_f(x2,q/z)
-        ff_hq = self.ff.get_f(z,q2,self.hadron)[i]
+        ff_hq = self.ff.xfxQ2(self.f, z, q2)
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
@@ -95,7 +95,7 @@ class Master():
 
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
         bka = self.n.udg_a(x2,q/z)
-        ff_hg = self.ff.get_f(z,q2,self.hadron)[i]
+        ff_hg = self.ff.xfxQ2(self.f, z,q2)
         return (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
 
 ################################################################################################################################
