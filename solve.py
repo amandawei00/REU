@@ -45,6 +45,7 @@ class Master():
         return xf
 ####################################################################################################################################
     def integrand(self,z):
+	print("integrand entered, for p_t = " + str(z) + " ...")
         xf = self.get_xf()
 
         x1 = xf/z
@@ -52,51 +53,39 @@ class Master():
         q = self.p_t
         q2 = q*q
 
-        """qual = ''
-        if self.f == -3: 
-            i = 5
-            qual = 'anti-strange quark'
-        elif self.f == -2: 
-            i = 1
-            qual = 'anti-up quark'
-        elif self.f == -1: 
-            i = 3
-            qual = 'anti-down quark'
-        elif self.f == 1: 
-            i = 2
-            qual = 'down quark'
-        elif self.f == 2: 
-            i = 0
-            qual = 'up quark'
-        elif self.f == 3: 
-            i = 4
-            qual = 'strange'
-        else:
-            return 0.0 """
-
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
-        bkf = self.n.udg_f(x2,q/z)
+        print("\t quark pdf done...")
+	bkf = self.n.udg_f(x2,q/z)
+	print("\t bkf done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
         ff_hq = self.ff.xfxQ2(self.f, z, q2)
+	print("\t fragmentation function done...")
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
+	print("exiting integrand")
         return a
 ###################################################################################################################################
     def integrand1(self, z):
-        xf = self.get_xf()
+	print("integrand entered, for p_t = " + str(z) + " ...")
+	xf = self.get_xf()
 
         x1 = xf/z
         x2 = x1*np.exp(-2*self.yh)
         q = self.p_t
         q2 = q*q
 
-        # if self.f == 21
-        i=8 # for gluons
-
+	# print("y="+str(q/z))
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
-        bka = self.n.udg_a(x2,q/z)
-        ff_hg = self.ff.xfxQ2(self.f, z,q2)
-        return (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
+        print("\t gluon pdf done, moving on to bka ...")
+	bka = self.n.udg_a(x2,q/z)
+        print("\t bka done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
+	ff_hg = self.ff.xfxQ2(self.f, z,q2)
+        print("\t fragmentation function done...")
+
+	a = (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
+	
+	print("exiting integrand")
+	return a
 
 ################################################################################################################################
     def rhs(self,pt): # DEFINE TOL

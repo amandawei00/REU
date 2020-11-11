@@ -55,7 +55,7 @@ class N:
             self.interp_r.append(interp1d(x_, y_, kind='cubic'))
 
     def bk_f(self, y):  # fundamental representation
-        #        t1 = time.time()
+        print("\t\tentering bkf for y = " + str(y) + " ...")
         rap = np.around(np.arange(-4.9, 30.0, 0.1), 2)  # must round np.arange values to 2 decimal places
         # search file to see if interpolation already exists !!!
         if y in rap:
@@ -71,27 +71,41 @@ class N:
         # write interpolated object to file !!!
 
     def bk_a(self, y):
-        print("bk_a : " + str(y))
+        print("\t\tentering bka for y = " + str(y) + " ...")
         f = self.bk_f(y)
         x = self.r
 
         g = 2 * f(x) - np.power(f(x), 2)
-        return interp1d(self.r, g, kind='cubic')
+	h = interp1d(self.r, g, kind='cubic')
+	print("\t\t\tbk interpolation created, exiting bka...")
+        return h
 
     def udg_f(self, x, k):
+	print("\t\t entering udgf...")
         f = self.bk_f(np.log(self.x0 / x))
         integrand = lambda r: (1 - f(r)) * self.bessel(k * r, 0)
-        return 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
+        a = 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
+
+	print("\t\t exiting udgf...")
+	return a
 
     def udg_a(self, x, k):
+	print("\t\t entering udga...")
         f = self.bk_a(np.log(self.x0 / x))
+	print("good 1")
         integrand = lambda r_: (1 - f(r_)) * self.bessel(k * r_, 0)
-        return 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
+        print("good 2")
+	a = 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
+	print("good 3")
+	print("\t\t exiting udga...")
+	return a
 
     def bessel(self, x, alpha):
+	print("entering bessel")
         f = lambda t: np.cos(alpha * t - x * np.sin(t))
-        return (1 / np.pi) * intg.quad(f, 0, np.pi, epsabs=1.e-3)[0]
-
+        g = (1 / np.pi) * intg.quad(f, 0, np.pi, epsabs=1.e-3)[0]
+	print("exiting bessel")
+	return g
 
 # end of class
 
@@ -101,4 +115,5 @@ if __name__ == "__main__":
     # k = 71.1797503982
     # x0 = 0.02
 
-    print(n.bk_f(-0.01))
+    f = n.bk_f(2.0959)
+    
