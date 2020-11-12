@@ -76,38 +76,44 @@ class N:
         x = self.r
 
         g = 2 * f(x) - np.power(f(x), 2)
-	h = interp1d(self.r, g, kind='cubic')
-	print("\t\t\tbk interpolation created, exiting bka...")
+        h = interp1d(self.r, g, kind='cubic')
+        print(self.r)
+        print(g)
+        print("\t\t\tbk interpolation created, exiting bka...")
         return h
 
     def udg_f(self, x, k):
-	print("\t\t entering udgf...")
+        print("\t\t entering udgf...")
         f = self.bk_f(np.log(self.x0 / x))
         integrand = lambda r: (1 - f(r)) * self.bessel(k * r, 0)
-        a = 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
+        a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
 
-	print("\t\t exiting udgf...")
-	return a
+        print("\t\t exiting udgf...")
+        return a
 
     def udg_a(self, x, k):
-	print("\t\t entering udga...")
+        print("\t\t entering udga...")
         f = self.bk_a(np.log(self.x0 / x))
-	print("good 1")
+        print("good 1")
         integrand = lambda r_: (1 - f(r_)) * self.bessel(k * r_, 0)
         print("good 2")
-	a = 2 * np.pi * intg.quad(integrand, self.xr1, self.xr2, epsabs=1.e-4)[0]
-	print("good 3")
-	print("\t\t exiting udga...")
-	return a
+        print(str(self.xr1) + " vs. " + str(self.r[0]))
+       #  if self.xr1 == self.r[0]: print("True")
+       # else: print("False")
+        a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
+        print("good 3")
+        print("\t\t exiting udga...")
+        return a
 
     def bessel(self, x, alpha):
-	print("entering bessel")
+        print("entering bessel")
         f = lambda t: np.cos(alpha * t - x * np.sin(t))
         g = (1 / np.pi) * intg.quad(f, 0, np.pi, epsabs=1.e-3)[0]
-	print("exiting bessel")
-	return g
+        print("exiting bessel")
+        return g
 
 # end of class
+
 
 if __name__ == "__main__":
     n = N()
@@ -115,5 +121,5 @@ if __name__ == "__main__":
     # k = 71.1797503982
     # x0 = 0.02
 
-    f = n.bk_f(2.0959)
-    
+    print(n.udg_a(0.001161195799828, 2.0959615528))
+
