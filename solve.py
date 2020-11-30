@@ -45,7 +45,7 @@ class Master():
         return xf
 ####################################################################################################################################
     def integrand(self,z):
-	print("integrand entered, for p_t = " + str(z) + " ...")
+	# print("quark integrand entered, for p_t = " + str(z) + ", flavor = " + self.f + " ...")
         xf = self.get_xf()
 
         x1 = xf/z
@@ -54,19 +54,19 @@ class Master():
         q2 = q*q
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
-        print("\t quark pdf done...")
+        # print("\t quark pdf done...")
 	bkf = self.n.udg_f(x2,q/z)
-	print("\t bkf done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
+	# print("\t bkf done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
         ff_hq = self.ff.xfxQ2(self.f, z, q2)
-	print("\t fragmentation function done...")
+	# print("\t fragmentation function done...")
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
 
-	print("exiting integrand")
+	# print("exiting quark integrand")
         return a
 ###################################################################################################################################
     def integrand1(self, z):
-	print("integrand entered, for p_t = " + str(z) + " ...")
+	# print("gluon integrand entered, for p_t = " + str(z) + " ...")
 	xf = self.get_xf()
 
         x1 = xf/z
@@ -76,31 +76,38 @@ class Master():
 
 	# print("y="+str(q/z))
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
-        print("\t gluon pdf done, moving on to bka ...")
+        # print("\t gluon pdf done, moving on to bka for x = " + str(x2) + ", q = " + str(q/z))
 	bka = self.n.udg_a(x2,q/z)
-        print("\t bka done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
+        # print("\t bka done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
 	ff_hg = self.ff.xfxQ2(self.f, z,q2)
-        print("\t fragmentation function done...")
+        # print("\t fragmentation function done...")
 
 	a = (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
 	
-	print("exiting integrand")
+	# print("gluon exiting integrand")
 	return a
 
 ################################################################################################################################
     def rhs(self,pt): # DEFINE TOL
+	print("entered rhs, for pt = " + str(pt))
         self.p_t = pt
         xf = self.get_xf()
         m = 0.0
 
-        gluon_intg = integrate.quad(self.integrand1, xf, 1.0)[0]
-        for i in self.flavors:
+	#print("entering gluon integrand")
+        gluon_intg = integrate.quad(self.integrand1, xf, 1.0, epsrel=1.e-4)[0]
+        print("gluon integrand done, g = " + str(gluon_intg))
+	for i in self.flavors:
             self.f = i
-            quark = integrate.quad(self.integrand,xf,1.0)[0]
+            quark = integrate.quad(self.integrand,xf,1.0, epsrel=1.e-4)[0]
+            print("quark integrand done for flavor " + str(i) + ", q_intg = " + str(quark))
             # print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
-
-        return m*self.K/np.power(2*np.pi, 2)
+	
+	turkey = m*self.K/np.power(2*np.pi,2)
+	print("rhs exit, pt = " + str(pt) + ", rhs = " + str(turkey))
+        
+	return turkey
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
 if __name__=="__main__":

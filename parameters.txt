@@ -5,4 +5,4 @@ collision energy per nucleon (squared) (sNN): 40000
 K factor: 1.0
 transverse momentum (lower bound): 1.1
 transverse momentum (upper bound): 5.0
-number of points evaluated: 10
+number of points evaluated: 8
