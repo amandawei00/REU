@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 import scipy.integrate as intg
+import time
 
 
 class N:
@@ -14,6 +15,8 @@ class N:
         # self.xr1 = 0.0
         self.xr2 = np.log(60.e0)  # limit of integration in fourier transform calculation
         tol = 1.e-8
+        self.width = 100
+
 
         # read results.csv file from BK solution to pandas dataframe
         self.df = pd.read_csv("full_bk_results.csv", sep="\t")
@@ -55,43 +58,58 @@ class N:
             self.interp_r.append(interp1d(x_, y_, kind='cubic'))
 
     def bk_f(self, y):  # fundamental representation
-        # print("\t\tentering bkf for y = " + str(y) + " ...")
+        t1 = time.time()
         rap = np.around(np.arange(-4.9, 30.0, 0.1), 2)  # must round np.arange values to 2 decimal places
         # search file to see if interpolation already exists !!!
         if y in rap:
             i = np.where(rap == y)[0][0]
-            return self.interp_y[i]
+            alpha = self.interp_y[i]
         else:
+            index = np.where(rap == round(y, 1))
             a = np.zeros(len(self.r))  # to be filled with N(r,y) values over which to interpolate
-            for i in range(len(a)):
+            for i in range(self.width):
                 f = self.interp_r[i]
                 a[i] = f(y)
-            return interp1d(self.r, a, kind='cubic')
+            alpha = interp1d(self.r, a, kind='cubic')
+
+
+        t2 = time.time()
+        print("bk_f took " + str(t2-t1) + " seconds")
+        return alpha
+
+
+
 
         # write interpolated object to file !!!
 
     def bk_a(self, y):
-        # print("\t\tentering bka for y = " + str(y) + " ...")
+        t1 = time.time()
         f = self.bk_f(y)
         x = self.r
 
         g = 2 * f(x) - np.power(f(x), 2)
         h = interp1d(self.r, g, kind='cubic')
-        # print(self.r)
-        # print(g)
-        # print("\t\t\tbk interpolation created, exiting bka...")
+
+        t2 = time.time()
+        print("bk_a took " + str(t2-t2) + " seconds")
         return h
 
     def udg_f(self, x, k):
+        t1 = time.time()
         f = self.bk_f(np.log(self.x0 / x))
         integrand = lambda r: (1 - f(r)) * self.bessel(k * r, 0)
         a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
+        t2 = time.time()
+        print("udg_f took " + str(t2-t1) + " seconds")
         return a
 
     def udg_a(self, x, k):
+        t1 = time.time()
         f = self.bk_a(np.log(self.x0 / x))
         integrand = lambda r_: (1 - f(r_)) * self.bessel(k * r_, 0)
         a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
+        t2 = time.time()
+        print("udg_a took " + str(t2-t1) + " seconds")
         return a
 
     def bessel(self, x, alpha):
@@ -106,9 +124,6 @@ class N:
 
 if __name__ == "__main__":
     n = N()
-    # x = 0.002463981259066879
-    # k = 71.1797503982
-    # x0 = 0.02
 
     print(n.udg_a(0.001161195799828, 2.0959615528))
 
