@@ -37,11 +37,22 @@ class N:
         self.r = np.concatenate(np.array(self.df.loc[self.df['y'] == 0.][['vr']]))  # r values over which N(r,Y) are evaluated
         self.y = np.unique(np.array(self.df[['y']]))
 
-        points = [(jingle, bell) for jingle in self.r for bell in self.y]  # coordinates made from permutations of values in self.r, self.y
-        values = [self.df.loc[(self.df['y'] == p[1]) & ((self.df['vr'] < (p[0]+tol)) & (self.df['vr'] > (p[0] - tol)))][['vfr']].iloc[0]['vfr'] for p in points]  # values of N(r,Y) which we KNOW from BK solution
-        self.ri = np.mgrid[self.r[0]:self.r[len(self.r)-1]:complex(self.pointsr)]  # grid over r
-        self.yi = np.mgrid[self.y[0]:self.y[len(self.y)-1]:complex(self.pointsy)]  # grid over y
-        self.f = interp.griddata(points, values, (self.ri, self.yi), method='cubic')  # interpolated grid
+        # points = [(jingle, bell) for jingle in self.r for bell in self.y]  # coordinates made from permutations of values in self.r, self.y
+        # values = [self.df.loc[(self.df['y'] == p[1]) & ((self.df['vr'] < (p[0]+tol)) & (self.df['vr'] > (p[0] - tol)))][['vfr']].iloc[0]['vfr'] for p in points]
+        # values of N(r,Y) which we KNOW from BK solution
+        # for i in range(len(points)):
+        #     p = points[i]
+        #     little_df = self.df.loc[(self.df['y'] == p[1]) & ((self.df['vr'] < (p[0]+tol)) & (self.df['vr'] > (p[0] - tol)))][['vfr']]
+        #     values[i] = little_df.iloc[0]['vfr']
+        #     print(values[i])
+
+        # values = [self.df.loc[(self.df['y'] == p[0]) & ((self.df['vr'] < (p[1]+tol)) & (self.df['vr'] > (p[1]-tol)))][['vfr']].iloc[0]['vfr'] for p in points]
+        # self.ri = np.mgrid[self.r[0]:self.r[len(self.r)-1]:complex(self.pointsr)]  # grid over r
+        # self.yi = np.mgrid[self.y[0]:self.y[len(self.y)-1]:complex(self.pointsy)]  # grid over y
+        # self.f = interp.griddata(points, values, (self.ri, self.yi), method='cubic')  # interpolated grid
+        # rr, yy = np.meshgrid(self.r, self.y)
+        self.z = [self.df.loc[(self.df['y'] == yy) & ((self.df['vr'] < (rr + tol)) & (self.df['vr'] > (rr - tol)))][['vfr']].iloc[0]['vfr'] for rr in self.r for yy in self.y]
+        self.f = interp.interp2d(self.r, self.y, self.z, kind='cubic')
 
         print(self.f)
         print(type(self.f))
@@ -67,31 +78,7 @@ class N:
 
     # given any r, Y within bounds of self.r and self.y, master returns interpolated value of N(r,Y)
     def master(self, r, y):
-        print("entering master function")
-        rl = self.find_index(r, self.ri)  # LOCATION of r in self.ri
-        yl = self.find_index(y, self.yi)  # LOCATION of y in self.yi
-
-        n = 0.0
-
-        if (r == self.ri[len(self.ri)-1]) and (y == self.yi[len(self.yi)-1]):
-            n = self.f[rl][yl]
-        elif rl >= len(self.ri)-1:  # edge case: do 1d interpolation over y
-            xvals = [self.yi[yl], self.yi[yl+1]]
-            yvals = [self.f[rl][yl], self.f[rl][yl+1]]
-            n = interp.interp1d(xvals, yvals, kind = 'linear')
-
-        elif yl >= len(self.yi)-1:  # edge case: do 1d interpolation over r
-            xvals = [self.ri[rl], self.ri[rl+1]]
-            yvals = [self.f[rl][yl], self.f[rl+1][yl]]
-            n = interp.interp1d(xvals, yvals, kind = 'linear')
-        else:
-            print("third option")
-            xvals = [self.ri[rl], self.ri[rl+1]]
-            yvals = [self.yi[yl], self.yi[yl+1]]
-            print("creating zvals array")
-            zvals = [[self.f[rl][yl], self.f[rl+1][yl]], [self.f[rl][yl+1], self.f[rl+1][yl+1]]]
-
-            n = interp.interp2d(xvals, yvals, zvals, kind='linear')
+        n = self.f(r,y)
 
         print("good good")
         return n
