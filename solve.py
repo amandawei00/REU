@@ -12,7 +12,7 @@ sys.path.append("python_scripts")
 # from DSS14_Python import DSS14
 # from DSS_Python import DSS
 import lhapdf as pdf
-from bk_interpolate import N
+from bk_interpolate_interp2d import N
 
 # - IH FOR HADRON TYPE, IC FOR HADRON CHARGE SHOULD BE MODIFIABLE AND INITIATED UPON CONSTRUCTION
 
