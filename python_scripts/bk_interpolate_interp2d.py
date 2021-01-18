@@ -79,8 +79,6 @@ class N:
     # given any r, Y within bounds of self.r and self.y, master returns interpolated value of N(r,Y)
     def master(self, r, y):
         n = self.f(r,y)
-
-        print("good good")
         return n
 
     def master_adj(self, r, y):
@@ -92,7 +90,7 @@ class N:
         integrand = lambda r_: (1 - self.master(r_, y_)) * self.bessel(k * r_, 0)
         a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
         t2 = time.time()
-        print("udg_f took " + str(t2-t1) + " seconds")
+        #print("udg_f took " + str(t2-t1) + " seconds")
         return a
 
     def udg_a(self, x, k):
@@ -101,7 +99,7 @@ class N:
         integrand = lambda r_: (1 - self.master_adj(r_, y_)) * self.bessel(k * r_, 0)
         a = 2 * np.pi * intg.quad(integrand, self.r[0], self.r[len(self.r)-1], epsabs=1.e-4)[0]
         t2 = time.time()
-        print("udg_a took " + str(t2-t1) + " seconds")
+        #print("udg_a took " + str(t2-t1) + " seconds")
         return a
 
     def bessel(self, x, alpha):

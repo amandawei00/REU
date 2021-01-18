@@ -17,7 +17,7 @@ from bk_interpolate_interp2d import N
 # - IH FOR HADRON TYPE, IC FOR HADRON CHARGE SHOULD BE MODIFIABLE AND INITIATED UPON CONSTRUCTION
 
 class Master():
-    def __init__(self, h, y, qsq, s_NN, K):
+    def __init__(self, h, y, qsq, s_NN_root, K):
         self.p = pdf.mkPDF("CT10",0)
         self.p = pdf.mkPDF("CT10/0")
 # 	self.p = pdf.mkPDFs("CT10nlo",0)
@@ -27,7 +27,7 @@ class Master():
 
 	print("done done ")
         self.qsq2 = qsq # saturation scale
-        self.sNN = s_NN # collision energy per nucleon [GeV]
+        self.sNN_root = s_NN_root # collision energy per nucleon [GeV]
         self.K = K
         self.hadron = h
 
@@ -41,7 +41,7 @@ class Master():
 	print("class successfully instantiated")
  ###################################################################################################################################
     def get_xf(self):
-        xf = (self.p_t/np.sqrt(self.sNN))*np.exp(self.yh)
+        xf = (self.p_t/self.sNN_root)*np.exp(self.yh)
         return xf
 ####################################################################################################################################
     def integrand(self,z):
@@ -95,12 +95,12 @@ class Master():
         m = 0.0
 
 	#print("entering gluon integrand")
-        gluon_intg = integrate.quad(self.integrand1, xf, 1.0, epsrel=1.e-4)[0]
-        print("gluon integrand done, g = " + str(gluon_intg))
+        gluon_intg = integrate.quad(self.integrand1, xf, 1.0, epsrel=1.e-3)[0]
+#        print("gluon integrand done, g = " + str(gluon_intg))
 	for i in self.flavors:
             self.f = i
-            quark = integrate.quad(self.integrand,xf,1.0, epsrel=1.e-4)[0]
-            print("quark integrand done for flavor " + str(i) + ", q_intg = " + str(quark))
+            quark = integrate.quad(self.integrand,xf,1.0, epsrel=1.e-3)[0]
+#            print("quark integrand done for flavor " + str(i) + ", q_intg = " + str(quark))
             # print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 	
@@ -128,6 +128,7 @@ if __name__=="__main__":
 	
 	for r in reader:  
 	    raw = r[0].split()
+            print(raw)
 	    param.append(raw[len(raw)-1])  # reading in values
 
     s = Master(param[0], float(param[1]), float(param[2]), float(param[3]), float(param[4]))  # creating instance of class
@@ -145,7 +146,9 @@ if __name__=="__main__":
 
     	for i in range(len(p_t)):
             cs[i] = s.rhs(p_t[i])
+	    print("rhs evaluated, cs[" + str(i) + "] = " + str(cs[i]))
             writer.writerow([p_t[i],cs[i]])
+            print("written.")
 
 
     fname = "run_1"  # folder name
