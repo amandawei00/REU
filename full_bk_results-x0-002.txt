@@ -1,0 +1,6 @@
+xlam = 0.241
+afrozen = 0.7
+ge = 0.5772156649d0
+xnf = 3.d0
+snn = 319 GeV          //square root of s (center of mass energy)
+xb = 0.02              // beginning of small-x evolution
