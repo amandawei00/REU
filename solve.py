@@ -140,18 +140,17 @@ if __name__=="__main__":
 
     p_t = np.arange(a,b,dp_t)  # values of tranverse momenta over which differential cross section will be evaluated
     cs = np.zeros(len(p_t))
-    
-    with open("temp.csv", "w") as tfile:  # write temporary output file so progress can be checked without interrupting code
+   
+    with open("temp.csv", "wb") as tfile:  # write temporary output file so progress can be checked without interrupting code
 	writer = csv.writer(tfile, delimiter='\t')
 
     	for i in range(len(p_t)):
             cs[i] = s.rhs(p_t[i])
 	    print("rhs evaluated, cs[" + str(i) + "] = " + str(cs[i]))
             writer.writerow([p_t[i],cs[i]])
-            print("written.")
 
 
-    fname = "run_1"  # folder name
+    """fname = "run_1"  # folder name
     subprocess.run(["mkdir", "output/" + fname])
     subprocess.run(["cp", "parameters.txt", "output/" + fname])  # copy parameter file to output folder
     subprocess.run(["cd", "output/" + fname])  # enter directory to write output here
@@ -165,6 +164,5 @@ if __name__=="__main__":
     subprocess.run(["cd", "../.."])  # return to original directory
     
     plt.plot(p_t, cs)
-    plt.show()
-
+    plt.show()"""
 # end of program
