@@ -5,12 +5,7 @@ import csv
 import matplotlib.pyplot as plt
 import subprocess
 
-# sys.path.append("DSS14_Python")
 sys.path.append("python_scripts")
-# sys.path.append("DSSLIB")
-
-# from DSS14_Python import DSS14
-# from DSS_Python import DSS
 import lhapdf as pdf
 from bk_interpolate_interp2d import N
 
@@ -20,7 +15,6 @@ class Master():
     def __init__(self, h, y, qsq, s_NN_root, K):
         self.p = pdf.mkPDF("CT10",0)
         self.p = pdf.mkPDF("CT10/0")
-# 	self.p = pdf.mkPDFs("CT10nlo",0)
 
         self.n = N()
         self.ff = pdf.mkPDF("DSS07PI",0)
@@ -45,7 +39,6 @@ class Master():
         return xf
 ####################################################################################################################################
     def integrand(self,z):
-	# print("quark integrand entered, for p_t = " + str(z) + ", flavor = " + self.f + " ...")
         xf = self.get_xf()
 
         x1 = xf/z
@@ -54,19 +47,13 @@ class Master():
         q2 = q*q
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
-        # print("\t quark pdf done...")
 	bkf = self.n.udg_f(x2,q/z)
-	# print("\t bkf done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
         ff_hq = self.ff.xfxQ2(self.f, z, q2)
-	# print("\t fragmentation function done...")
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
-
-	# print("exiting quark integrand")
         return a
 ###################################################################################################################################
     def integrand1(self, z):
-	# print("gluon integrand entered, for p_t = " + str(z) + " ...")
 	xf = self.get_xf()
 
         x1 = xf/z
@@ -74,17 +61,11 @@ class Master():
         q = self.p_t
         q2 = q*q
 
-	# print("y="+str(q/z))
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
-        # print("\t gluon pdf done, moving on to bka for x = " + str(x2) + ", q = " + str(q/z))
 	bka = self.n.udg_a(x2,q/z)
-        # print("\t bka done, for y = " + str(q/z) + ", r = " + str(x2) + " ...")
 	ff_hg = self.ff.xfxQ2(self.f, z,q2)
-        # print("\t fragmentation function done...")
 
 	a = (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
-	
-	# print("gluon exiting integrand")
 	return a
 
 ################################################################################################################################
@@ -94,14 +75,10 @@ class Master():
         xf = self.get_xf()
         m = 0.0
 
-	#print("entering gluon integrand")
         gluon_intg = integrate.quad(self.integrand1, xf, 1.0, epsrel=1.e-3)[0]
-#        print("gluon integrand done, g = " + str(gluon_intg))
 	for i in self.flavors:
             self.f = i
             quark = integrate.quad(self.integrand,xf,1.0, epsrel=1.e-3)[0]
-#            print("quark integrand done for flavor " + str(i) + ", q_intg = " + str(quark))
-            # print("quark = " + str(quark) + ", gluon = " + str(gluon_intg))
             m += quark + gluon_intg # integral
 	
 	turkey = m*self.K/np.power(2*np.pi,2)
@@ -146,7 +123,7 @@ if __name__=="__main__":
 
     	for i in range(len(p_t)):
             cs[i] = s.rhs(p_t[i])
-	    print("rhs evaluated, cs[" + str(i) + "] = " + str(cs[i]))
+	   #  print("rhs evaluated, cs[" + str(i) + "] = " + str(cs[i]))
             writer.writerow([p_t[i],cs[i]])
 
 
