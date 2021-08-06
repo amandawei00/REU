@@ -11,7 +11,7 @@ class N:
 
     def __init__(self):
         self.n_ = 400
-        self.x0 = 0.02
+        self.x0 = 0.01
         self.xr1 = np.log(3.e-6)
         # self.xr1 = 0.0
         self.xr2 = np.log(60.e0)  # limit of integration in fourier transform calculation
@@ -22,7 +22,7 @@ class N:
 
 
         # read results.csv file from BK solution to pandas dataframe
-        self.df = pd.read_csv("full_bk_results-x0-002.csv", sep="\t")
+        self.df = pd.read_csv("full_bk_results.csv", sep="\t")
         self.df.columns = ['kuta', 'y', 'vr', 'vfr', 'prev']
         # self.df = self.df.drop(self.df[self.df.kuta == "kuta"].index)
 
