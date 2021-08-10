@@ -24,7 +24,8 @@ df["y"] = (df["y"].astype('float32')).round(decimals=1)
 df["vr"] = df["vr"].astype('float64')
 df["vfr"] = df["vfr"].astype('float64')
 
-rap = np.around(np.arange(-4.9, 30.0, 0.1), decimals=2)
+# rap = np.around(np.arange(-4.9, 30.0, 0.1), decimals=2)
+rap = [-4.5, 0, 4.5, 5, 15]
 vr_original = np.array(df.loc[(df['kuta'] == 4) & (df['y'] == 0.)][['vr']])
 
 for i in range(len(rap)):
