@@ -1,5 +1,5 @@
-hadron type: h-
-rapidity (y): 2.2
+hadron type: pi0	
+rapidity (y): 4.0
 saturation scale (qsq2): 0.4
 collision energy per nucleon (GeV): 200
 K factor: 1.0

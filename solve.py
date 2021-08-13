@@ -13,11 +13,11 @@ from bk_interpolate_interp2d import N
 
 class Master():
     def __init__(self, h, y, qsq, s_NN_root, K):
-        self.p = pdf.mkPDF("CT10",0)
-        self.p = pdf.mkPDF("CT10/0")
+        self.p = pdf.mkPDF("CT10nlo",0)
+        # self.p = pdf.mkPDF("CT10/0")
 
         self.n = N()
-        self.ff = pdf.mkPDF("DSS07HA",0)
+        self.ff = pdf.mkPDF("DSS07PINLO",0)
 
 	print("done done ")
         self.qsq2 = qsq # saturation scale
@@ -48,7 +48,7 @@ class Master():
 
         pdf_qp = self.p.xfxQ2(self.f,x1,q2) # returns x1*f(x1,pt^2) where f is pdf
 	bkf = self.n.udg_f(x2,q/z)
-        ff_hq = self.ff.xfxQ2(self.f, z, q2)
+        ff_hq = self.ff.xfxQ2(self.f, z, q2)/z
 
         a = (1/np.power(z,2))*(pdf_qp*bkf*ff_hq)
         return a
@@ -64,7 +64,7 @@ class Master():
 	self.f = 21
         pdf_gp = self.p.xfxQ2(self.f,x1,q2)
 	bka = self.n.udg_a(x2,q/z)
-	ff_hg = self.ff.xfxQ2(self.f, z,q2)
+	ff_hg = self.ff.xfxQ2(self.f, z,q2)/z
 
 	a = (1/np.power(z,2))*(pdf_gp*bka*ff_hg)
 	return a
