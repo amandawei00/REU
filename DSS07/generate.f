@@ -18,10 +18,10 @@
       REAL*8 GL,U,UB,D,DB,S,SB,C,CB,B,BB
 
 C-----CHOOSE GRIDS TO EXPORT
-      I_PI = 1
+      I_PI = 0
       I_KA = 0
       I_PR = 0
-      I_HA = 0
+      I_HA = 1
 
 C      DATA QS / 0.100000E+01, 0.111803E+01, 0.122474E+01, 0.158114E+01,
 C     1 0.200000E+01, 0.252982E+01, 0.316228E+01, 0.387298E+01, 0.500000E+01,
@@ -70,26 +70,26 @@ C------https://pdg.lbl.gov/2006/reviews/pdf-files/montecarlo-web.pdf
       DSS07_PI_DIR = 'DSS07PINLO/'
       DSS07_KA_DIR = 'DSS07KA/'
       DSS07_PR_DIR = 'DSS07PR/'
-      DSS07_HA_DIR = 'DSS07HA/'
+      DSS07_HA_DIR = 'DSS07HNLO/'
 
 *-----GRID FILE NAMES:
       DSS07_PI_GRIDS = 'PINLO.GRID'
       DSS07_KA_GRIDS = 'KALO.GRID'
       DSS07_PR_GRIDS = 'PROLO.GRID'
-      DSS07_HA_GRIDS = 'HALO.GRID'
+      DSS07_HA_GRIDS = 'HNLO.GRID'
 
 
 *-----Create Directories if they do not exist
       MKDIR = 'mkdir'
 
 C------PION
-      IF (I_PI.eq.1) THEN
-        INQUIRE(FILE=DSS07_PI_DIR, EXIST=DIRECTORY_EXISTS)
+      IF (I_HA.eq.1) THEN
+        INQUIRE(FILE=DSS07_HA_DIR, EXIST=DIRECTORY_EXISTS)
         IF (.not.DIRECTORY_EXISTS) THEN
-            CALL SYSTEM(MKDIR//DSS07_PI_DIR)
+            CALL SYSTEM(MKDIR//DSS07_HA_DIR)
         ENDIF
 *-------Generate LHAPDF Grids
-        OPEN(UNIT = 4, FILE = trim(DSS07_PI_DIR)//DSS07_PI_GRIDS)
+        OPEN(UNIT = 4, FILE = trim(DSS07_HA_DIR)//DSS07_HA_GRIDS)
         WRITE(4,*) 'PdfType: central'
         WRITE(4,*) 'Format: lhagrid1'
         WRITE(4,*) '---'
@@ -99,8 +99,8 @@ C------PION
 
 
 C-------PION
-        IH = 1
-        IC = 0
+        IH = 4
+        IC = -1
         IO = 1
 
         DO I = 1, 35

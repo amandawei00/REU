@@ -17,7 +17,7 @@ class Master():
         # self.p = pdf.mkPDF("CT10/0")
 
         self.n = N()
-        self.ff = pdf.mkPDF("DSS07PINLO",0)
+        self.ff = pdf.mkPDF("DSS07HNLO",0)
 
 	print("done done ")
         self.qsq2 = qsq # saturation scale
