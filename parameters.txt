@@ -3,6 +3,6 @@ rapidity (y): 3.2
 saturation scale (qsq2): 0.4
 collision energy per nucleon (GeV): 200
 K factor: 1.0
-transverse momentum (lower bound): 1.
-transverse momentum (upper bound): 5.
-number of points evaluated: 8
+transverse momentum (lower bound): 5.
+transverse momentum (upper bound): 6.
+number of points evaluated: 2
