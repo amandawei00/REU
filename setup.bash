@@ -9,7 +9,7 @@ export PATH=$PATH:$PWD
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
 cd -
 
-module load python/2.6
+module load python/3.7.3
 cd ../lib64/
 export PATH=$PATH:$PWD
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD

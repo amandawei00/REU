@@ -148,23 +148,23 @@ CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
-DOXYGEN = /usr/bin/doxygen
+DOXYGEN = 
 DSYMUTIL = 
 DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-FGREP = /bin/grep -F
-GREP = /bin/grep
+FGREP = /usr/bin/grep -F
+GREP = /usr/bin/grep
 HAVE_CXX11 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /u/local/compilers/gcc/4.9.3/bin/ld -m elf_x86_64
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS =  -L/u/home/a/amandawe/REU/LHAPDF-6.2.1/../lib
 LHAPDF_CXX = g++ -std=c++11
 LHAPDF_CXXFLAGS = -O3
@@ -177,8 +177,8 @@ LTLIBOBJS =
 LT_SYS_LIBRARY_PATH = 
 MAKEINFO = ${SHELL} /u/home/a/amandawe/REU/LHAPDF-6.2.1/config/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = /bin/mkdir -p
-NM = /u/local/compilers/gcc/4.9.3/bin/nm -B
+MKDIR_P = /usr/bin/mkdir -p
+NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
@@ -193,14 +193,14 @@ PACKAGE_URL =
 PACKAGE_VERSION = 6.2.1
 PATH_SEPARATOR = :
 PDFLATEX = /usr/bin/pdflatex
-PYTHON = /u/home/a/amandawe/miniconda2/bin/python
+PYTHON = /u/local/apps/python/2.7.15/gcc-4.8.5/bin/python
 PYTHON_EXEC_PREFIX = ${exec_prefix}
 PYTHON_PATH = /u/home/a/amandawe/REU/LHAPDF-6.2.1/../lib/python2.7/site-packages
 PYTHON_PLATFORM = linux2
 PYTHON_PREFIX = ${prefix}
 PYTHON_VERSION = 2.7
 RANLIB = ranlib
-SED = /bin/sed
+SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
@@ -376,8 +376,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-#uninstall-local:
-#mostlyclean-local:
+uninstall-local:
+mostlyclean-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -465,22 +465,22 @@ uninstall-am: uninstall-local
 manual:
 	(cd manual && make)
 
-doxy:
-	@echo "Running Doxygen..."
-	ln -sf $(top_srcdir)/TODO TODO.dox
-	ln -sf $(top_srcdir)/DESIGN DESIGN.dox
-	ln -sf $(top_srcdir)/CODINGSTYLE CODINGSTYLE.dox
-	ln -sf $(top_srcdir)/CONFIGFLAGS CONFIGFLAGS.dox
-	ln -sf $(top_srcdir)/INSTALL INSTALL.dox
-	ln -sf $(top_srcdir)/migration/README MIGRATION.dox
-	@$(DOXYGEN) || true
-install-doxy:
-	$(install_sh_DATA) html/* $(DESTDIR)$(pkgdatadir)/doc/html
-mostlyclean-local:
-	@rm -rf $(top_builddir)/html $(top_builddir)/latex
-uninstall-local:
-	@rm -rf $(DESTDIR)$(pkgdatadir)/doc; \
-	test ! -d $(DESTDIR)$(pkgdatadir) || rmdir --ignore-fail-on-non-empty $(DESTDIR)$(pkgdatadir)
+#doxy:
+#	@echo "Running Doxygen..."
+#	ln -sf $(top_srcdir)/TODO TODO.dox
+#	ln -sf $(top_srcdir)/DESIGN DESIGN.dox
+#	ln -sf $(top_srcdir)/CODINGSTYLE CODINGSTYLE.dox
+#	ln -sf $(top_srcdir)/CONFIGFLAGS CONFIGFLAGS.dox
+#	ln -sf $(top_srcdir)/INSTALL INSTALL.dox
+#	ln -sf $(top_srcdir)/migration/README MIGRATION.dox
+#	@$(DOXYGEN) || true
+#install-doxy:
+#	$(install_sh_DATA) html/* $(DESTDIR)$(pkgdatadir)/doc/html
+#mostlyclean-local:
+#	@rm -rf $(top_builddir)/html $(top_builddir)/latex
+#uninstall-local:
+#	@rm -rf $(DESTDIR)$(pkgdatadir)/doc; \
+#	test ! -d $(DESTDIR)$(pkgdatadir) || rmdir --ignore-fail-on-non-empty $(DESTDIR)$(pkgdatadir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
